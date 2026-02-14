@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Starry Night 💙</title>
+    <style>
+        /* --- ESTILOS BASE --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow: hidden;
+            color: white;
+            background: radial-gradient(circle at top, #1e3c72, #0f2027);
+            height: 100vh;
+        }
+
+        h1 { margin-top: 10vh; font-size: clamp(22px, 7vw, 45px); z-index: 1; position: relative; text-shadow: 2px 2px 10px black; padding: 0 10px; }
+        p { position: relative; z-index: 1; font-size: clamp(13px, 3.5vw, 16px); padding: 0 15px; max-width: 500px; margin: 10px auto; }
+
+        /* --- ANIMACIONES --- */
+        @keyframes subir { 0% { transform: translateY(100vh) scale(0.5); opacity: 1; } 100% { transform: translateY(-10vh) scale(1.3); opacity: 0; } }
+        @keyframes brillar { from { opacity: 0.2; } to { opacity: 1; } }
+        @keyframes girar { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+        @keyframes latido { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+        @keyframes bordeAnimado { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        /* Animación para el Gran Corazón Central */
+        @keyframes latidoGrande {
+            0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 10px #0072ff); }
+            50% { transform: translate(-50%, -50%) scale(1.15); filter: drop-shadow(0 0 30px #00c6ff); }
+            100% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 10px #0072ff); }
+        }
+
+        /* --- ELEMENTOS --- */
+        .corazon { position: absolute; font-size: 20px; animation: subir 6s linear infinite; opacity: 0.6; z-index: 0; pointer-events: none; }
+        .estrella { position: absolute; font-size: 10px; animation: brillar 2s infinite alternate; z-index: 0; pointer-events: none; }
+        .girasol { display: inline-block; animation: girar 8s linear infinite; }
+        .rosa { display: inline-block; animation: latido 1.5s infinite; }
+
+        /* El Gran Corazón Azul - BAJADO UN POCO MÁS */
+        .corazon-central {
+            position: fixed;
+            top: 55%; /* Bajado del 45% al 55% */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(80px, 20vw, 150px);
+            z-index: 0;
+            user-select: none;
+            animation: latidoGrande 2s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        .btn-abrir { 
+            position: relative; z-index: 5; margin-top: 15px; padding: 12px 25px; font-size: 16px; 
+            border: none; border-radius: 30px; background: white; color: #1e3c72; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* --- CARTA --- */
+        .carta {
+            position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 85%; max-width: 320px; height: 200px; border-radius: 15px; padding: 4px;
+            background: linear-gradient(45deg, #00c6ff, #0072ff, #00c6ff);
+            background-size: 300% 300%; animation: bordeAnimado 4s linear infinite;
+            transition: 0.5s ease; z-index: 105;
+        }
+        .carta.activa { transform: translate(-50%, -50%) scale(1); }
+        .contenido { width: 100%; height: 100%; background: white; border-radius: 12px; position: relative; overflow: hidden; }
+        .tapa { position: absolute; width: 100%; height: 100%; background: #1e3c72; clip-path: polygon(0 0, 50% 50%, 100% 0); transform-origin: top; transition: 0.5s; z-index: 2; }
+        .carta.activa .tapa { transform: rotateX(180deg); }
+        .mensaje { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #1e3c72; font-size: 15px; padding: 15px; opacity: 0; transition: 0.5s; width: 85%; }
+        .carta.activa .mensaje { opacity: 1; transition-delay: 0.3s; }
+
+        /* --- PANELES LATERALES (AJUSTADOS) --- */
+        .panel {
+            position: fixed; top: 50%; width: 75%; max-width: 280px; height: 320px; padding: 5px; border-radius: 25px;
+            background: linear-gradient(45deg, #00c6ff, #0072ff, #00c6ff);
+            background-size: 300% 300%; animation: bordeAnimado 5s linear infinite;
+            transition: 0.6s cubic-bezier(.77, 0, .18, 1); z-index: 110;
+        }
+        .panel-izq { left: -320px; transform: translateY(-50%); }
+        .panel-der { right: -320px; transform: translateY(-50%); }
+        .panel-izq.activo { left: 15px; }
+        .panel-der.activo { right: 15px; }
+
+        .panel-contenido { width: 100%; height: 100%; background: white; border-radius: 20px; padding: 18px; box-sizing: border-box; color: #1e3c72; overflow-y: auto; font-size: 14px; text-align: left; }
+
+        .boton-lateral { position: fixed; top: 50%; transform: translateY(-50%); background: #0072ff; border: none; padding: 12px; border-radius: 50%; color: white; cursor: pointer; z-index: 120; box-shadow: 0 0 15px #00c6ff; }
+        .btn-izq { left: 10px; }
+        .btn-der { right: 10px; }
+
+        .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); opacity: 0; pointer-events: none; transition: 0.4s; z-index: 90; }
+        .overlay.activo { opacity: 1; pointer-events: auto; }
+
+        /* --- REPRODUCTOR COMPLETO Y RESPONSIVO --- */
+        .music-player {
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 650px; padding: 12px; display: flex; align-items: center; gap: 15px;
+            border-radius: 25px; backdrop-filter: blur(15px); background: rgba(0, 114, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); z-index: 130;
+        }
+        .cover { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; transition: 1s linear; border: 2px solid #00c6ff; flex-shrink: 0; }
+        .playing .cover { animation: girar 4s linear infinite; }
+        .info { flex: 1; text-align: left; min-width: 0; }
+        .title { font-size: 15px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist { font-size: 12px; opacity: 0.8; }
+        .progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.3); border-radius: 10px; margin-top: 8px; cursor: pointer; }
+        .progress { height: 100%; width: 0%; background: #00c6ff; border-radius: 10px; }
+        .time { display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px; }
+        
+        .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 18px; margin-top: 5px; }
+        .bar { width: 4px; height: 4px; background: #00c6ff; border-radius: 2px; animation: bounce 1s infinite ease-in-out; animation-play-state: paused; }
+        .playing .bar { animation-play-state: running; }
+        @keyframes bounce { 0%, 100% { height: 4px; } 50% { height: 18px; } }
+
+        .controls { flex-shrink: 0; }
+        .controls button { background: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; color: #1e3c72; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        @media (max-width: 480px) {
+            .music-player { gap: 10px; padding: 10px; }
+            .cover { width: 50px; height: 50px; }
+            .title { font-size: 13px; }
+            .time { font-size: 9px; }
+            .bar { width: 3px; }
+            .panel { height: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="corazon-central">💙</div>
+
+    <h1>✨💙 For My Starry Night 💙✨</h1>
+    <p>
+        <span class="girasol">🌻</span> Eres y siempre seras una persona 
+        muy importante y capaz de todo lo que te dispongas, 
+        eres alguien increible y que nadie nunca te haga dudar de eso.. <span class="rosa">🌻</span>
+    </p>
+
+    <button class="btn-abrir" onclick="abrirCarta()">¡Ábreme! (plii) 💌</button>
+
+    <div class="carta" id="carta">
+        <div class="contenido">
+            <div class="tapa"></div>
+            <div class="mensaje">
+                Gracias por existir 💙<br><br>
+                Eres mi química mayor 💙✨
+            </div>
+        </div>
+    </div>
+
+    <button class="boton-lateral btn-izq" onclick="toggleIzq()">💙</button>
+    <button class="boton-lateral btn-der" onclick="toggleDer()">✨</button>
+
+    <div class="overlay" id="overlay" onclick="cerrarTodo()"></div>
+
+    <div class="panel panel-izq" id="panelIzq">
+        <div class="panel-contenido" id="textoIzq" contenteditable="true">
+        Aunque pasen mil siglos siempre seras mi lugar seguro que sin importar lo que pase aqui estare para ti,
+        tu mas que nadie sabes que no necesitamos fechas especiales para hacer un gesto mas aja tu sabe san valentin
+        y eso pero el punto eso que no necesito una fecha en el calentario que diga o me haga darme cuenta de lo extraordinaria
+        que eres,tu carisma, tu personalidad aveces dificil pero incomparable es algo unico que solo en ti se encuentra 💙✨
+        </div>
+    </div>
+
+    <div class="panel panel-der" id="panelDer">
+        <div class="panel-contenido" id="textoDer" contenteditable="true">
+             Solo espero que te guste, quedo medio vacio y sensillo por que es la primera vez que lo hago se que querias
+            flores pero senti que debia variar un poco, no necesitas flores de mi parte para que te hagan saber lo mucho que te aprecio,
+             creeme que no tienes la remota idea de cuanto te quiero, espero esto no te incomode y si es asi perdon solo queria darte un detalle.
+             No sabes cuanto te quiero ✨
+        </div>
+    </div>
+
+    <div class="music-player" id="mainPlayer">
+        <img src="portada.jpg" class="cover" alt="Portada">
+        <div class="info">
+            <div class="title">Química Mayor</div>
+            <div class="artist">Mon Laferte</div>
+            <div class="progress-container" onclick="setProgress(event)">
+                <div class="progress"></div>
+            </div>
+            <div class="time">
+                <span id="current">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+            <div class="visualizer">
+                <div class="bar" style="animation-delay: 0s;"></div>
+                <div class="bar" style="animation-delay: 0.2s;"></div>
+                <div class="bar" style="animation-delay: 0.4s;"></div>
+                <div class="bar" style="animation-delay: 0.6s;"></div>
+                <div class="bar" style="animation-delay: 0.8s;"></div>
+            </div>
+        </div>
+        <div class="controls">
+            <button onclick="togglePlay()" id="playBtn">▶</button>
+        </div>
+        <audio id="audio" loop>
+            <source src="quimica-mayor.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script>
+        const audio = document.getElementById("audio");
+        const playBtn = document.getElementById("playBtn");
+        const progress = document.querySelector(".progress");
+        const current = document.getElementById("current");
+        const durationText = document.getElementById("duration");
+        const player = document.getElementById("mainPlayer");
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = "⏸";
+                player.classList.add("playing");
+            } else {
+                audio.pause();
+                playBtn.textContent = "▶";
+                player.classList.remove("playing");
+            }
+        }
+
+        audio.addEventListener("timeupdate", () => {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = percent + "%";
+            current.textContent = formatTime(audio.currentTime);
+        });
+
+        audio.addEventListener("loadedmetadata", () => {
+            durationText.textContent = formatTime(audio.duration);
+        });
+
+        function formatTime(time) {
+            const min = Math.floor(time / 60);
+            const sec = Math.floor(time % 60);
+            return min + ":" + (sec < 10 ? "0" + sec : sec);
+        }
+
+        function setProgress(e) {
+            const width = e.currentTarget.clientWidth;
+            const clickX = e.offsetX;
+            audio.currentTime = (clickX / width) * audio.duration;
+        }
+
+        function abrirCarta() { document.getElementById("carta").classList.toggle("activa"); }
+        function toggleIzq() { document.getElementById("panelIzq").classList.add("activo"); document.getElementById("overlay").classList.add("activo"); }
+        function toggleDer() { document.getElementById("panelDer").classList.add("activo"); document.getElementById("overlay").classList.add("activo"); }
+        function cerrarTodo() { 
+            document.getElementById("panelIzq").classList.remove("activo"); 
+            document.getElementById("panelDer").classList.remove("activo"); 
+            document.getElementById("overlay").classList.remove("activo"); 
+        }
+
+        const textoIzq = document.getElementById("textoIzq");
+        const textoDer = document.getElementById("textoDer");
+        textoIzq.innerHTML = localStorage.getItem("panelIzq") || textoIzq.innerHTML;
+        textoDer.innerHTML = localStorage.getItem("panelDer") || textoDer.innerHTML;
+        textoIzq.addEventListener("input", () => localStorage.setItem("panelIzq", textoIzq.innerHTML));
+        textoDer.addEventListener("input", () => localStorage.setItem("panelDer", textoDer.innerHTML));
+
+        setInterval(() => {
+            const c = document.createElement("div");
+            c.classList.add("corazon");
+            c.innerHTML = "💙";
+            c.style.left = Math.random() * 100 + "vw";
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 6000);
+        }, 500);
+
+        setInterval(() => {
+            const e = document.createElement("div");
+            e.classList.add("estrella");
+            e.innerHTML = "✨";
+            e.style.left = Math.random() * 100 + "vw";
+            e.style.top = Math.random() * 100 + "vh";
+            document.body.appendChild(e);
+            setTimeout(() => e.remove(), 2000);
+        }, 400);
+    </script>
+</body>
+</html>
